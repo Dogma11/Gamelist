@@ -47,7 +47,7 @@ public class PlatformAsync extends AsyncTask {
         if (exception != null) {
             Toast.makeText(mainActivity, exception.getMessage(), Toast.LENGTH_SHORT).show();
         } else {
-            mainActivity.addallDataPlatform(resultatPlatform);
+            mainActivity.addAllDataPlatform(resultatPlatform);
 
         }
 

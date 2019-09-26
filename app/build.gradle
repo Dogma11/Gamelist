@@ -31,6 +31,7 @@ dependencies {
     implementation 'com.squareup:otto:1.+'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.synnapps:carouselview:0.1.5'
 
 
 //pour faire les requetes
@@ -38,5 +39,6 @@ dependencies {
     //parser du Json en objet Java
     implementation 'com.google.code.gson:gson:2.3'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 
 }

@@ -2,6 +2,7 @@ package com.example.gamelist.Utils;
 
 import android.util.Log;
 
+import com.example.gamelist.Model.Artwork;
 import com.example.gamelist.Model.Game;
 import com.example.gamelist.Model.GamePlatform;
 import com.example.gamelist.Model.Genre;
@@ -14,15 +15,22 @@ import java.util.ArrayList;
 public class WebService {
 
     private static final Gson gson = new Gson();
+
     private static final String URL_GENRE = "https://api-v3.igdb.com/genres";
-    private static final String FIELD_GENRE = "fields id,name;";
     private static final String URL_PLATFORM = "https://api-v3.igdb.com/platforms";
-    private static final String FIELD_PLATFORM = "fields id,name;";
     private static final String URL_GAMES = "https://api-v3.igdb.com/games";
+    private static final String URL_ARTWORK = "https://api-v3.igdb.com/artworks";
+
+    private static final String FIELD_GENRE = "fields id,name;";
+    private static final String FIELD_PLATFORM = "fields id,name;";
     private static final String FIELD_GAME = "fields id,name,genres.name,platforms.name,cover.url,rating;";
+    private static final String FIELD_ARTWORK = "fields url;";
+
+
     private static final Type arrayOfGenre = new TypeToken<ArrayList<Genre>>() {}.getType();
     private static final Type arrayOfPlatform = new TypeToken<ArrayList<GamePlatform>>() {}.getType();
     private static final Type arrayOfGame = new TypeToken<ArrayList<Game>>() {}.getType();
+    private static final Type arrayOfArtwork = new TypeToken<ArrayList<Artwork>>() {}.getType();
 
 
     public static ArrayList<Genre> getGenres(String query) throws Exception {
@@ -87,5 +95,26 @@ public class WebService {
         }
         return result;
 
+    }
+
+    public static ArrayList<Artwork> getArtworks(String query) throws Exception {
+
+        OkHttputils okHttputils = new OkHttputils();
+        String response = "";
+        Log.w("url", query);
+        try {
+            response = OkHttputils.sendPostOkHttpRequest(URL_ARTWORK, query);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.w("tag", response);
+
+        ArrayList<Artwork> result = gson.fromJson(response, arrayOfArtwork);
+
+        if (result == null) {
+            throw new Exception("nothing return");
+        }
+        return result;
     }
 }

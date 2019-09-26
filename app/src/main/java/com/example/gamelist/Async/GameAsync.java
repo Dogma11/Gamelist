@@ -1,15 +1,12 @@
 package com.example.gamelist.Async;
 
 import android.os.AsyncTask;
-import android.util.Log;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.gamelist.MainActivity;
 import com.example.gamelist.Model.Game;
-import com.example.gamelist.Model.Genre;
 import com.example.gamelist.Utils.WebService;
 
 import java.util.ArrayList;
@@ -21,12 +18,12 @@ public class GameAsync extends AsyncTask {
     private String selectedPlatform;
     private String ratingMin;
     private MainActivity mainActivity;
-    ArrayList<Game> resultatGame;
+    private ArrayList<Game> resultatGame;
 
-    RecyclerView recyclerGame;
+    private RecyclerView recyclerGame;
 
     private Exception exception;
-    private String query;
+    private String query = "";
 
     public GameAsync(RecyclerView recyclerGame, MainActivity mainActivity, String selectedGenre, String selectedPlatform, String ratingMin, String searchQuery) {
         this.recyclerGame = recyclerGame;
@@ -45,23 +42,22 @@ public class GameAsync extends AsyncTask {
     @Override
     protected Object doInBackground(Object[] objects) {
         String where = "where ";
-        query = "";
-        if (!searchQuery.isEmpty() && searchQuery != null) {
+        if (searchQuery != null && !searchQuery.isEmpty()) {
             query += "search \"" + searchQuery.toLowerCase() + "\";";
         }
-        if (selectedPlatform != ""){
+        if (!selectedPlatform.equals("")){
             query += where + "platforms = (" + selectedPlatform + ") ";
             where = "& ";
         }
-        if (selectedGenre != ""){
+        if (!selectedGenre.equals("")){
             query += where + "genres = (" + selectedGenre + ") ";
             where = "& ";
         }
-        if (ratingMin != "0"){
+        if (!ratingMin.equals("0")){
             query += where + "rating >= " + ratingMin +" ";
             where = "& ";
         }
-        if (where != "where "){
+        if (!where.equals("where ")){
             query += ";";
         }
         try {
@@ -82,9 +78,9 @@ public class GameAsync extends AsyncTask {
             Toast.makeText(mainActivity, exception.getMessage(), Toast.LENGTH_SHORT).show();
         } else {
             mainActivity.clearData();
-            mainActivity.addallData(resultatGame);
+            mainActivity.addAllData(resultatGame);
 
-            mainActivity.getGameAdaper().notifyDataSetChanged();
+            mainActivity.getGameAdapter().notifyDataSetChanged();
         }
 
 

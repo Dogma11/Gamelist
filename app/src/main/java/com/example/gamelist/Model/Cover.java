@@ -5,6 +5,11 @@ public class Cover {
 
     private String url;
 
+    public Cover(String id, String url) {
+        this.id = id;
+        this.url = url;
+    }
+
     public String getId() {
         return id;
     }

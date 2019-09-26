@@ -1,5 +1,6 @@
 package com.example.gamelist;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -23,7 +24,7 @@ import com.example.gamelist.Model.Genre;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GameAdapter.OnGameClickListener {
     
     private EditText searchName;
     
@@ -35,11 +36,13 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Genre> dataGenre;
     private ArrayList<GamePlatform> dataPlatform;
 
-    private GameAdapter gameAdaper;
+    private GameAdapter gameAdapter;
 
     private GenreAsync genreAsync;
     private PlatformAsync platformAsync;
     private GameAsync gameAsync;
+
+    public static Game selectedGame = null;
 
 
     @Override
@@ -60,18 +63,28 @@ public class MainActivity extends AppCompatActivity {
         dataGenre = new ArrayList<>();
         dataPlatform = new ArrayList<>();
 
-        gameAdaper = new GameAdapter(data);
+        gameAdapter = new GameAdapter(data);
+        gameAdapter.setOnGameClickListener(this);
 
-        recyclerGame.setAdapter(gameAdaper);
+        recyclerGame.setAdapter(gameAdapter);
         recyclerGame.setLayoutManager(new LinearLayoutManager(this));
         genreAsync = new GenreAsync(textGenre, this);
-        genreAsync.execute();
+        try {
+            genreAsync.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         platformAsync = new PlatformAsync(textPlatform, this);
-        platformAsync.execute();
+        try {
+            platformAsync.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         ArrayList<String> ratings = new ArrayList<>();
         for (Integer i = 0; i <= 100; i++) {
-            ratings.add( i.toString() );
+            ratings.add( String.valueOf(i) );
         }
 
         ArrayAdapter<String> ratingAdapter = new ArrayAdapter<>(this,
@@ -82,64 +95,49 @@ public class MainActivity extends AppCompatActivity {
     }
     // DATA SETTER GETTER CLEANER
     // GAMEDATA
-    public void addallData(ArrayList<Game> data) {
+    public void addAllData(ArrayList<Game> data) {
         this.data.addAll(data);
     }
     public void clearData() {
         this.data.clear();
     }
     // GENRE DATA
-    public void addallDataGenre(ArrayList<Genre> dataGenre) {
+    public void addAllDataGenre(ArrayList<Genre> dataGenre) {
         this.dataGenre.addAll(dataGenre);
         Log.w("tag", this.dataGenre.getClass().toString());
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("");
-        arrayList.addAll(getGenresName(this.dataGenre));
+        arrayList.addAll(Game.getArrayGenresName(this.dataGenre));
         ArrayAdapter<String> genreAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, arrayList);
         genreAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         textGenre.setAdapter(genreAdapter);
         genreAsync = null;
     }
-    public ArrayList<String> getGenresName (ArrayList<Genre> dataGenre) {
-        ArrayList<String> genreNames = new ArrayList<>();
-        for (Genre genre : dataGenre) {
-            genreNames.add(genre.getName());
-        }
-        return genreNames;
-    }
+
     // PLATFORM DATA
-    public void addallDataPlatform(ArrayList<GamePlatform> dataPlatform) {
+    public void addAllDataPlatform(ArrayList<GamePlatform> dataPlatform) {
         this.dataPlatform.addAll(dataPlatform);
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add("");
-        arrayList.addAll(getPlatformName(this.dataPlatform));
+        arrayList.addAll(Game.getArrayPlatformName(this.dataPlatform));
         ArrayAdapter<String> platformAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, arrayList);
         platformAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         textPlatform.setAdapter(platformAdapter);
         platformAsync = null;
     }
-    public ArrayList<String> getPlatformName (ArrayList<GamePlatform> dataPlatform) {
-        ArrayList<String> platformNames = new ArrayList<>();
-        for (GamePlatform platform : dataPlatform) {
-            platformNames.add(platform.getName());
-        }
-        return platformNames;
-    }
 
-    public void onbtSend(View view) {
-        String selectedPlatform = getPlatformByName(textPlatform.getSelectedItem().toString());
-        String selectedGenre = getGenreByName(textGenre.getSelectedItem().toString());
+    public void onBtSend(View view) {
+        String selectedPlatform = Game.getPlatformByName(textPlatform.getSelectedItem().toString(), dataPlatform);
+        String selectedGenre = Game.getGenreByName(textGenre.getSelectedItem().toString(), dataGenre);
         String ratingMin = String.valueOf(textRating.getSelectedItem());
         String searchQuery;
-        if (searchName.getText().toString() != ""){
+        if (searchName.getText().toString().equals("")){
             searchQuery = searchName.getText().toString();
         } else {
             searchQuery = "";
         }
-
-
 
         Log.w("tag", selectedPlatform);
         if (gameAsync == null || gameAsync.getStatus() == AsyncTask.Status.FINISHED) {
@@ -149,33 +147,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public String getGenreByName (String name) {
-        String genreId = "";
-        for(Genre genre : dataGenre){
-            if(genre.getName() != null && name != "" && genre.getName().contains(name)) {
-                return genre.getId();
-            }
-        }
-        return genreId;
-    }
-    public String getPlatformByName (String name) {
-        String platformId = "";
-        for(GamePlatform platform : dataPlatform){
-            if(platform.getName() != null && name != "" && platform.getName().contains(name)) {
-                return platform.getId();
-            }
-        }
-        return platformId;
-    }
-
-
     //ADAPTER
-    public GameAdapter getGameAdaper() {
-        return gameAdaper;
+    public GameAdapter getGameAdapter() {
+        return gameAdapter;
     }
 
-    public void setGameAdaper(GameAdapter gameAdaper) {
-        this.gameAdaper = gameAdaper;
+    public void setGameAdapter(GameAdapter gameAdapter) {
+        this.gameAdapter = gameAdapter;
+    }
+
+    @Override
+    public void onGameClick (Game game) {
+        selectedGame = game;
+        startActivity(new Intent(this, GameDetail.class));
     }
 
 }

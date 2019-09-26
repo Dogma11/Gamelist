@@ -1,6 +1,7 @@
 package com.example.gamelist.Adapter;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,12 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
 
     private ArrayList<Game> data;
 
+    public OnGameClickListener onGameClickListener;
+
+    public void setOnGameClickListener(OnGameClickListener onGameClickListener) {
+        this.onGameClickListener = onGameClickListener;
+    }
+
     public GameAdapter(ArrayList<Game> data) {
         this.data = data;
     }
@@ -39,7 +46,7 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Game datum = data.get(position);
+        final Game datum = data.get(position);
         Log.w("cover", String.valueOf(datum.getCovers()) );
         if (datum.getCovers() != null) {
             Picasso.get().load("http:" + datum.getCovers().getUrl()).into(holder.imageCover);
@@ -47,12 +54,12 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
             holder.imageCover.setImageResource(R.mipmap.ic_launcher);
         }
         if (datum.getGenres() != null && !datum.getGenres().isEmpty()){
-            holder.tvGenres.setText(getGenresName(datum.getGenres()));
+            holder.tvGenres.setText(Game.getGenresName(datum.getGenres()));
         } else {
             holder.tvGenres.setText("?");
         }
         if (datum.getPlatforms() != null) {
-            holder.tvPlatforms.setText(getPlatformName(datum.getPlatforms()));
+            holder.tvPlatforms.setText(Game.getPlatformsName(datum.getPlatforms()));
         }else {
             holder.tvPlatforms.setText("?");
         }
@@ -61,8 +68,14 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
         } else {
             holder.tvRating.setText("?");
         }
-
         holder.tvName.setText(datum.getName());
+        Log.w("root", datum.getName());
+        holder.root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            onGameClickListener.onGameClick(datum);
+            }
+        });
     }
 
     @Override
@@ -70,54 +83,11 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
         return data.size();
     }
 
-    @SuppressLint("NewApi")
-    public String getGenresName (ArrayList<Genre> iterator) {
-        String string;
-        StringBuilder builder = new StringBuilder();
-        if (iterator.size() <= 0) {
-            return "";
-        }
-        if (iterator.size() > 1){
-            for (Genre genre : iterator)
-            {
-                if (genre != null) {
-                    builder.append(genre.getName());
-                    builder.append(",");
-                }
-            }
-            string = builder.toString();
-        } else {
-            string = iterator.get(0).getName();
-        }
-        return string;
-    }
-
-    @SuppressLint("NewApi")
-    public String getPlatformName (ArrayList<GamePlatform> iterator) {
-        String string;
-        StringBuilder builder = new StringBuilder();
-        if (iterator.size() <= 0) {
-            return "";
-        }
-        if (iterator.size() > 1){
-            for (GamePlatform platform : iterator)
-            {
-                if (platform != null) {
-                    builder.append(platform.getName());
-                    builder.append(",");
-                }
-            }
-            string = builder.toString();
-        } else {
-            string = iterator.get(0).getName();
-        }
-        return string;
-    }
-
-    protected static class ViewHolder extends RecyclerView.ViewHolder {//2
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tvName, tvGenres, tvRating, tvPlatforms;
         ImageView imageCover;
+        View root;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -126,8 +96,11 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
             tvRating = itemView.findViewById(R.id.textRating);
             tvPlatforms = itemView.findViewById(R.id.textPlatform);
             imageCover = itemView.findViewById(R.id.imageCover);
+            root = itemView.findViewById(R.id.root);
         }
     }
 
-
+    public interface OnGameClickListener {
+        void onGameClick(Game game);
+    }
 }

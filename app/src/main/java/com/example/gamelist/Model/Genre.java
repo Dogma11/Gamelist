@@ -1,5 +1,10 @@
 package com.example.gamelist.Model;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Genre {
     private String id;
 
@@ -20,4 +25,22 @@ public class Genre {
     }
 
     private String name;
+
+    public static Map<String, String> shortGenre = new HashMap<String, String>() {
+        {
+            put("Role-playing (RPG)", "RPG");
+            put("Quiz/Trivia", "Quiz");
+            put("Turn-based strategy (TBS)", "Turn-Based");
+            put("Real Time Strategy (RTS)", "RTS");
+            put("Hack and slash/Beat 'em up", "Hack 'Slash");
+        }
+    };
+
+    public String getSanitazedName () {
+        if ( shortGenre.get(this.getName()) != null ){
+            return shortGenre.get(this.getName());
+        }else {
+            return this.getName();
+        }
+    }
 }

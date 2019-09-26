@@ -1,14 +1,17 @@
 package com.example.gamelist.Model;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
+import android.os.Parcelable;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 
 import okhttp3.internal.platform.Platform;
 
-public class Game {
+public final class Game implements Serializable {
 
     private String id;
 
@@ -69,6 +72,92 @@ public class Game {
 
     public void setRating(Double rating) {
         this.rating = rating;
+    }
+
+    public static ArrayList<String> getArrayPlatformName (ArrayList<GamePlatform> dataPlatform) {
+        ArrayList<String> platformNames = new ArrayList<>();
+        for (GamePlatform platform : dataPlatform) {
+            platformNames.add(platform.getName());
+        }
+        return platformNames;
+    }
+
+    public static ArrayList<String> getArrayGenresName (ArrayList<Genre> dataGenre) {
+        ArrayList<String> genreNames = new ArrayList<>();
+        for (Genre genre : dataGenre) {
+            genreNames.add(genre.getName());
+        }
+        return genreNames;
+    }
+
+    public static String getGenreByName (String name, ArrayList<Genre> dataGenre) {
+        String genreId = "";
+        for(Genre genre : dataGenre){
+            if(genre.getName() != null && name != "" && genre.getName().contains(name)) {
+                return genre.getId();
+            }
+        }
+        return genreId;
+    }
+
+    public static String getPlatformByName (String name, ArrayList<GamePlatform> dataPlatform) {
+        String platformId = "";
+        for(GamePlatform platform : dataPlatform){
+            if(platform.getName() != null && name != "" && platform.getName().contains(name)) {
+                return platform.getId();
+            }
+        }
+        return platformId;
+    }
+
+    public static String getPlatformsName (ArrayList<GamePlatform> iterator) {
+        String string;
+        Integer i = 0;
+        StringBuilder builder = new StringBuilder();
+        if (iterator.size() <= 0) {
+            return "";
+        }
+        if (iterator.size() > 1){
+            for (GamePlatform platform : iterator)
+            {
+                i ++;
+                if (platform != null) {
+                    builder.append(platform.getSanitazedName());
+                    if (i != iterator.size()){
+                        builder.append(", ");
+                    }
+                }
+            }
+            string = builder.toString();
+        } else {
+            string = iterator.get(0).getSanitazedName();
+        }
+        return string;
+    }
+
+    public static String getGenresName (ArrayList<Genre> iterator) {
+        String string;
+        StringBuilder builder = new StringBuilder();
+        Integer i = 0;
+        if (iterator.size() <= 0) {
+            return "";
+        }
+        if (iterator.size() > 1){
+            for (Genre genre : iterator)
+            {
+                i ++;
+                if (genre != null) {
+                    builder.append(genre.getSanitazedName());
+                    if (i != iterator.size()){
+                        builder.append(", ");
+                    }
+                }
+            }
+            string = builder.toString();
+        } else {
+            string = iterator.get(0).getSanitazedName();
+        }
+        return string;
     }
 
 }

@@ -48,7 +48,7 @@ public class GenreAsync extends AsyncTask {
             Toast.makeText(mainActivity, exception.getMessage(), Toast.LENGTH_SHORT).show();
             Log.w("bug", exception.getMessage());
         } else {
-            mainActivity.addallDataGenre(resultatGenres);
+            mainActivity.addAllDataGenre(resultatGenres);
         }
 
 

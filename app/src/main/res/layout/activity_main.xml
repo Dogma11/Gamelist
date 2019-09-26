@@ -22,7 +22,7 @@
             android:text="Name" />
 
         <Button
-            android:onClick="onbtSend"
+            android:onClick="onBtSend"
             android:id="@+id/button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
