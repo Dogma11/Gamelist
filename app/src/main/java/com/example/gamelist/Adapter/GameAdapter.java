@@ -47,9 +47,9 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final Game datum = data.get(position);
-        Log.w("cover", String.valueOf(datum.getCovers()) );
-        if (datum.getCovers() != null) {
-            Picasso.get().load("http:" + datum.getCovers().getUrl()).into(holder.imageCover);
+        Log.w("cover", String.valueOf(datum.getCover()) );
+        if (datum.getCover() != null) {
+            Picasso.get().load("http:" + datum.getCover().getUrl()).into(holder.imageCover);
         } else {
             holder.imageCover.setImageResource(R.mipmap.ic_launcher);
         }
@@ -63,17 +63,17 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
         }else {
             holder.tvPlatforms.setText("?");
         }
-        if (datum.getRating() != null) {
-            holder.tvRating.setText(String.valueOf(datum.getRating().intValue()));
+        if (datum.getRating() > 0) {
+            holder.tvRating.setText(String.valueOf(Math.round(datum.getRating())));
         } else {
             holder.tvRating.setText("?");
         }
         holder.tvName.setText(datum.getName());
-        Log.w("root", datum.getName());
+        Log.w("root", holder.root.toString() );
         holder.root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            onGameClickListener.onGameClick(datum);
+                onGameClickListener.onGameClick(datum);
             }
         });
     }

@@ -23,56 +23,9 @@ public final class Game implements Serializable {
 
     private Cover cover;
 
-    private Double rating;
+    private double rating;
 
-
-    public Cover getCovers() {
-        return cover;
-    }
-
-    public void setCovers(Cover covers) {
-        this.cover = covers;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ArrayList<Genre> getGenres() {
-        return genres;
-    }
-
-    public void setGenres(ArrayList<Genre> genres) {
-        this.genres = genres;
-    }
-
-    public ArrayList<GamePlatform> getPlatforms() {
-        return platforms;
-    }
-
-    public void setPlatforms(ArrayList<GamePlatform> platforms) {
-        this.platforms = platforms;
-    }
-
-    public Double getRating() {
-        return rating;
-    }
-
-    public void setRating(Double rating) {
-        this.rating = rating;
-    }
+    private boolean isFav;
 
     public static ArrayList<String> getArrayPlatformName (ArrayList<GamePlatform> dataPlatform) {
         ArrayList<String> platformNames = new ArrayList<>();
@@ -160,4 +113,59 @@ public final class Game implements Serializable {
         return string;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ArrayList<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(ArrayList<Genre> genres) {
+        this.genres = genres;
+    }
+
+    public ArrayList<GamePlatform> getPlatforms() {
+        return platforms;
+    }
+
+    public void setPlatforms(ArrayList<GamePlatform> platforms) {
+        this.platforms = platforms;
+    }
+
+    public Cover getCover() {
+        return cover;
+    }
+
+    public void setCover(Cover cover) {
+        this.cover = cover;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public boolean isFav() {
+        return isFav;
+    }
+
+    public void setFav(boolean fav) {
+        isFav = fav;
+    }
 }

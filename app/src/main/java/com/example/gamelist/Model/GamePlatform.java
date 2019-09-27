@@ -1,9 +1,10 @@
 package com.example.gamelist.Model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GamePlatform {
+public class GamePlatform implements Serializable {
     private String id;
 
     public String getId() {

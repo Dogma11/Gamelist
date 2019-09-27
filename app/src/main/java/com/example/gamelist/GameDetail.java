@@ -1,6 +1,12 @@
 package com.example.gamelist;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.JsonWriter;
+import android.view.View;
+import android.view.ViewParent;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,6 +19,10 @@ import com.example.gamelist.Async.ArtworksAsync;
 import com.example.gamelist.Model.Artwork;
 import com.example.gamelist.Model.Cover;
 import com.example.gamelist.Model.Game;
+import com.example.gamelist.Utils.SharedPreferenceUtils;
+import com.google.gson.Gson;
+
+import java.io.Writer;
 import java.util.ArrayList;
 
 public class GameDetail extends AppCompatActivity {
@@ -21,10 +31,16 @@ public class GameDetail extends AppCompatActivity {
 
     private ArrayList<Artwork> artworks = new ArrayList<>();
 
-    private Game selectedGame = null;
-    private Cover gameCover = null;
+    private Game selectedGame;
+    private Cover gameCover;
+
+    private Context context;
+    private SharedPreferences prefs;
+    private SharedPreferenceUtils myPrefs;
 
     private TextView detailGenres, detailPlatforms, detailName, detailScore;
+    private RecyclerView list;
+    private Button btFavorite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +51,26 @@ public class GameDetail extends AppCompatActivity {
         detailPlatforms = findViewById(R.id.detailPlatforms);
         detailScore     = findViewById(R.id.detailScore);
         detailName      = findViewById(R.id.detailName);
+        btFavorite      = findViewById(R.id.btFavorite);
+        list = findViewById(R.id.imageSlider);
+        context = getApplicationContext();
+
+        prefs = context.getSharedPreferences("Favorite.xml", MODE_PRIVATE);
+
+        myPrefs = new SharedPreferenceUtils(prefs);
 
         artworkAdapter = new ArtworkAdapter(artworks);
-        RecyclerView list = findViewById(R.id.imageSlider);
         list.setLayoutManager(new LinearLayoutManager(this , LinearLayoutManager.HORIZONTAL,false));
         list.setAdapter(artworkAdapter);
 
-        this.selectedGame = MainActivity.selectedGame;
+        Bundle bundle = this.getIntent().getExtras() ;
+        selectedGame = (Game) bundle.getSerializable("selectedGame");
+
+        // TODO: REMOVE
+        /*for (Game game : myPrefs.loadGames() ) {
+            myPrefs.removeGame(game);
+        }*/
+
         ArtworksAsync artworksAsync = new ArtworksAsync(selectedGame, this);
         try {
             artworksAsync.execute();
@@ -55,8 +84,8 @@ public class GameDetail extends AppCompatActivity {
         super.onResume();
         // SETTING GAME DATA DETAIL
         if (selectedGame != null ) {
-            if (selectedGame.getCovers() != null && selectedGame.getCovers().getUrl() != null && selectedGame.getCovers().getUrl().isEmpty()) {
-                gameCover = new Cover(selectedGame.getCovers().getId(), selectedGame.getCovers().getUrl());
+            if (selectedGame.getCover() != null && selectedGame.getCover().getUrl() != null && selectedGame.getCover().getUrl().isEmpty()) {
+                gameCover = new Cover(selectedGame.getCover().getId(), selectedGame.getCover().getUrl());
                 artworks.add(new Artwork(gameCover.getId(), gameCover.getUrl()));
             }
             // ~~~~~~GENRES~~~~~~
@@ -78,11 +107,17 @@ public class GameDetail extends AppCompatActivity {
                 detailName.setText(R.string.unknown);
             }
             // ~~~~~~RATING~~~~~~
-            if (selectedGame.getRating() != null) {
+            if (selectedGame.getRating() > 0) {
                 String score = String.valueOf(Math.round(selectedGame.getRating())) ;
                 detailScore.setText(score);
             } else {
                 detailScore.setText(R.string.unknown);
+            }
+
+            if (selectedGame.isFav() || myPrefs.isPresent(selectedGame)) {
+                btFavorite.setText(R.string.removefavorite);
+            } else {
+                btFavorite.setText(R.string.addfavorite);
             }
         }
     }
@@ -94,6 +129,20 @@ public class GameDetail extends AppCompatActivity {
         }
         this.artworks.addAll(data);
         artworkAdapter.notifyDataSetChanged();
+
     }
 
+    public void addFavorite(View view) {
+        if (this.myPrefs != null && selectedGame != null ) {
+            if (selectedGame.isFav()) {
+                myPrefs.removeGame(selectedGame);
+                btFavorite.setText(getString(R.string.addfavorite));
+                selectedGame.setFav(false);
+            } else {
+                myPrefs.saveGame(selectedGame);
+                btFavorite.setText(getString(R.string.removefavorite));
+                selectedGame.setFav(true);
+            }
+        }
+    }
 }

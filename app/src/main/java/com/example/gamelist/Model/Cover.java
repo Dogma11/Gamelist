@@ -1,6 +1,8 @@
 package com.example.gamelist.Model;
 
-public class Cover {
+import java.io.Serializable;
+
+public class Cover implements Serializable {
     private String id;
 
     private String url;

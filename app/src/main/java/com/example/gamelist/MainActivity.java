@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -24,7 +26,7 @@ import com.example.gamelist.Model.Genre;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements GameAdapter.OnGameClickListener {
+public class  MainActivity extends AppCompatActivity implements GameAdapter.OnGameClickListener {
     
     private EditText searchName;
     
@@ -133,13 +135,13 @@ public class MainActivity extends AppCompatActivity implements GameAdapter.OnGam
         String selectedGenre = Game.getGenreByName(textGenre.getSelectedItem().toString(), dataGenre);
         String ratingMin = String.valueOf(textRating.getSelectedItem());
         String searchQuery;
-        if (searchName.getText().toString().equals("")){
+        if (!searchName.getText().toString().isEmpty()){
             searchQuery = searchName.getText().toString();
         } else {
             searchQuery = "";
         }
 
-        Log.w("tag", selectedPlatform);
+        Log.e("tag", "here " + searchQuery);
         if (gameAsync == null || gameAsync.getStatus() == AsyncTask.Status.FINISHED) {
 
             gameAsync = new GameAsync(recyclerGame, this, selectedGenre, selectedPlatform, ratingMin, searchQuery);
@@ -159,7 +161,24 @@ public class MainActivity extends AppCompatActivity implements GameAdapter.OnGam
     @Override
     public void onGameClick (Game game) {
         selectedGame = game;
-        startActivity(new Intent(this, GameDetail.class));
+        Bundle bundle = new Bundle();
+        Log.e("click", "clicked");
+        bundle.putSerializable("selectedGame", selectedGame);
+        startActivity(new Intent(this, GameDetail.class).putExtras(bundle) );
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0,25,0, "Favorite");
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case 25:
+                startActivity( new Intent( this, Favorite.class ) );
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

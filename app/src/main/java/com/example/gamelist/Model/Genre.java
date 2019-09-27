@@ -1,11 +1,12 @@
 package com.example.gamelist.Model;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Genre {
+public class Genre implements Serializable {
     private String id;
 
     public String getId() {
